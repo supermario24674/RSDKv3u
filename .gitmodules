@@ -1,6 +1,6 @@
 [submodule "dependencies/all/stb-image"]
 	path = dependencies/all/stb-image
-	url = https://github.com/nothings/stb.git
+	url = https://github.com/nothings/stb
 [submodule "dependencies/all/tinyxml2"]
 	path = dependencies/all/tinyxml2
 	url = https://github.com/leethomason/tinyxml2
@@ -9,4 +9,4 @@
 	url = https://github.com/flathub/shared-modules.git
 [submodule "dependencies/all/asio"]
 	path = dependencies/all/asio
-	url = https://github.com/chriskohlhoff/asio.git
+	url = https://github.com/chriskohlhoff/asio
