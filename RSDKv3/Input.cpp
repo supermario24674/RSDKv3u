@@ -502,6 +502,22 @@ void ProcessInput()
         inputDevice[INPUT_ANY].setReleased();
     }
 #endif //! RETRO_USING_SDL2
+    for (int32 i = 0; i < PLAYER_COUNT; ++i) {
+        int32 assign = inputSlots[i];
+        if (assign && assign != INPUT_UNASSIGNED) {
+            if (assign == INPUT_AUTOASSIGN) {
+                int32 id      = GetAvaliableInputDevice();
+                inputSlots[i] = id;
+                if (id != INPUT_AUTOASSIGN)
+                    AssignInputSlotToDevice(CONT_P1 + i, id);
+            }
+            else {
+                InputDevice *device = inputSlotDevices[i];
+                if (device && device->id == assign && device->active)
+                    device->ProcessInput(CONT_P1 + i);
+            }
+        }
+    }
 }
 #endif //! !RETRO_USE_ORIGINAL_CODE
 
