@@ -1,6 +1,12 @@
 #ifndef INPUT_H
 #define INPUT_H
 
+enum InputSlotIDs {
+    CONT_ANY,
+    CONT_P1,
+    CONT_P2,
+};
+
 enum InputButtons {
     INPUT_UP,
     INPUT_DOWN,
