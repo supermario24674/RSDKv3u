@@ -328,8 +328,8 @@ void RetroEngine::Init()
 #if !RETRO_USE_ORIGINAL_CODE
     // "error message"
     if (!running) {
-        char rootDir[0x80];
-        char pathBuffer[0x80];
+        char rootDir[0x180];
+        char pathBuffer[0x180];
 
 #if RETRO_PLATFORM == RETRO_UWP
         if (!usingCWD)
