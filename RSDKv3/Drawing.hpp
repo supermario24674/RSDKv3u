@@ -127,6 +127,8 @@ extern DrawVertex screenRect[4];
 extern DrawVertex retroScreenRect[4];
 
 int InitRenderDevice();
+int32 GetVideoSetting(int32 id);
+void SetVideoSetting(int32 id, int32 value);
 void FlipScreen();
 void FlipScreenFB();
 void FlipScreenNoFB();
