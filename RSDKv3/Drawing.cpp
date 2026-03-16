@@ -670,18 +670,12 @@ int32 GetVideoSetting(int32 id)
         case VIDEOSETTING_SHADERSUPPORT: return videoSettings.shaderSupport;
         case VIDEOSETTING_SHADERID: return videoSettings.shaderID;
         case VIDEOSETTING_SCREENCOUNT: return videoSettings.screenCount;
-#if RETRO_REV02
         case VIDEOSETTING_DIMTIMER: return videoSettings.dimTimer;
-#endif
         case VIDEOSETTING_STREAMSENABLED: return engine.streamsEnabled;
         case VIDEOSETTING_STREAM_VOL: return (int32)(engine.streamVolume * 1024.0);
         case VIDEOSETTING_SFX_VOL: return (int32)(engine.soundFXVolume * 1024.0);
         case VIDEOSETTING_LANGUAGE:
-#if RETRO_REV02
-            return SKU::curSKU.language;
-#else
             return gameVerInfo.language;
-#endif
         case VIDEOSETTING_CHANGED: return changedVideoSettings;
 
         default: break;
@@ -755,9 +749,7 @@ void SetVideoSetting(int32 id, int32 value)
             break;
 
         case VIDEOSETTING_SCREENCOUNT: videoSettings.screenCount = value; break;
-#if RETRO_REV02
         case VIDEOSETTING_DIMTIMER: videoSettings.dimLimit = value; break;
-#endif
         case VIDEOSETTING_STREAMSENABLED:
             if (engine.streamsEnabled != boolVal)
                 changedVideoSettings = true;
