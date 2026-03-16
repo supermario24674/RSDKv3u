@@ -447,6 +447,16 @@ const FunctionInfo functions[] = {
     FunctionInfo("SetLeaderboard", 2),
     FunctionInfo("LoadOnlineMenu", 1),
     FunctionInfo("EngineCallback", 1),
+    FunctionInfo("CheckCameraProximity", 4),
+    FunctionInfo("SetScreenCount", 1),
+    FunctionInfo("SetScreenVertices", 5),
+    FunctionInfo("GetInputDeviceID", 2),
+    FunctionInfo("GetFilteredInputDeviceID", 4),
+    FunctionInfo("GetInputDeviceType", 2),
+    FunctionInfo("IsInputDeviceAssigned", 1),
+    FunctionInfo("AssignInputSlotToDevice", 2),
+    FunctionInfo("IsInputSlotAssigned", 1),
+    FunctionInfo("ResetInputSlotAssignments", 0),
 #if RETRO_USE_HAPTICS
     FunctionInfo("HapticEffect", 4),
 #endif
@@ -750,7 +760,18 @@ enum ScrVariable {
 #if RETRO_USE_HAPTICS
     VAR_ENGINEHAPTICSENABLED,
 #endif
-    VAR_MAX_CNT
+    // Extras
+    FUNC_CHECKCAMERAPROXIMITY,
+    FUNC_SETSCREENCOUNT,
+    FUNC_SETSCREENVERTICES,
+    FUNC_GETINPUTDEVICEID,
+    FUNC_GETFILTEREDINPUTDEVICEID,
+    FUNC_GETINPUTDEVICETYPE,
+    FUNC_ISINPUTDEVICEASSIGNED,
+    FUNC_ASSIGNINPUTSLOTTODEVICE,
+    FUNC_ISSLOTASSIGNED,
+    FUNC_RESETINPUTSLOTASSIGNMENTS,
+    FUNC_MAX_CNT
 };
 
 enum ScrFunction {
@@ -2894,6 +2915,140 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptSub)
 #if RETRO_USE_HAPTICS
                     case VAR_ENGINEHAPTICSENABLED: scriptEng.operands[i] = Engine.hapticsEnabled; break;
 #endif
+                    // Extras for origins 2PVS
+                    case FUNC_CHECKCAMERAPROXIMITY:
+                        scriptEng.checkResult = false;
+
+                        // FUNCTION PARAMS:
+                        // scriptEng.operands[0] = pos.x
+                        // scriptEng.operands[1] = pos.y
+                        // scriptEng.operands[2] = range.x
+                        // scriptEng.operands[3] = range.y
+                        //
+                        // FUNCTION NOTES:
+                        // - Sets scriptEng.checkResult
+
+                        if (scriptEng.operands[2] > 0 && scriptEng.operands[3] > 0) {
+                            for (int32 s = 0; s < videoSettings.screenCount; ++s) {
+                                int32 sx = abs(scriptEng.operands[0] - cameras[s].xpos);
+                                int32 sy = abs(scriptEng.operands[1] - cameras[s].ypos);
+
+                                if (sx < scriptEng.operands[2] && sy < scriptEng.operands[3]) {
+                                    scriptEng.checkResult = true;
+                                    break;
+                                }
+                            }
+                        }
+                        else {
+                            if (scriptEng.operands[2] > 0) {
+                                for (int32 s = 0; s < videoSettings.screenCount; ++s) {
+                                    int32 sx = abs(scriptEng.operands[0] - cameras[s].xpos);
+
+                                    if (sx < scriptEng.operands[2]) {
+                                        scriptEng.checkResult = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            else if (scriptEng.operands[3] > 0) {
+                                for (int32 s = 0; s < videoSettings.screenCount; ++s) {
+                                    int32 sy = abs(scriptEng.operands[1] - cameras[s].ypos);
+
+                                    if (sy < scriptEng.operands[3]) {
+                                        scriptEng.checkResult = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        break;
+
+                    case FUNC_SETSCREENCOUNT:
+                    // FUNCTION PARAMS:
+                    // scriptEng.operands[0] = screenCount
+
+                    RSDK::SetVideoSetting(VIDEOSETTING_SCREENCOUNT, scriptEng.operands[0]);
+                    break;
+
+                    case FUNC_SETSCREENVERTICES:
+                        // FUNCTION PARAMS:
+                        // scriptEng.operands[0] = startVert2P_S1
+                        // scriptEng.operands[1] = startVert2P_S2
+                        // scriptEng.operands[2] = startVert3P_S1
+                        // scriptEng.operands[3] = startVert3P_S2
+                        // scriptEng.operands[4] = startVert3P_S3
+
+                        RSDK::SetScreenVertices(scriptEng.operands[0], scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3],
+                                                scriptEng.operands[4]);
+                        break;
+
+                    case FUNC_GETINPUTDEVICEID:
+                        // FUNCTION PARAMS:
+                        // scriptEng.operands[0] = deviceID
+                        // scriptEng.operands[1] = inputSlot
+                        //
+                        // FUNCTION NOTES:
+                        // - Assigns the device's id to scriptEng.operands[0]
+
+                        scriptEng.operands[0] = GetInputDeviceID(scriptEng.operands[1]);
+                        break;
+
+                    case FUNC_GETFILTEREDINPUTDEVICEID:
+                        // FUNCTION PARAMS:
+                        // scriptEng.operands[0] = deviceID
+                        // scriptEng.operands[1] = confirmOnly
+                        // scriptEng.operands[2] = unassignedOnly
+                        // scriptEng.operands[3] = maxInactiveTimer
+                        //
+                        // FUNCTION NOTES:
+                        // - Assigns the filtered device's id to scriptEng.operands[0]
+
+                        scriptEng.operands[0] = GetFilteredInputDeviceID(scriptEng.operands[1], scriptEng.operands[2] > 0, scriptEng.operands[3]);
+                        break;
+
+                    case FUNC_GETINPUTDEVICETYPE:
+                        // FUNCTION PARAMS:
+                        // scriptEng.operands[0] = deviceType
+                        // scriptEng.operands[1] = deviceID
+                        //
+                        // FUNCTION NOTES:
+                        // - Assigns the device's type to scriptEng.operands[0]
+
+                        scriptEng.operands[0] = GetInputDeviceType(scriptEng.operands[1]);
+                        break;
+
+                    case FUNC_ISINPUTDEVICEASSIGNED:
+                        // FUNCTION PARAMS:
+                        // scriptEng.operands[0] = deviceID
+
+                        scriptEng.checkResult = IsInputDeviceAssigned(scriptEng.operands[0]);
+                        break;
+
+                    case FUNC_ASSIGNINPUTSLOTTODEVICE:
+                        // FUNCTION PARAMS:
+                        // scriptEng.operands[0] = inputSlot
+                        // scriptEng.operands[1] = deviceID
+
+                        AssignInputSlotToDevice(scriptEng.operands[0], scriptEng.operands[1]);
+                        break;
+
+                    case FUNC_ISSLOTASSIGNED:
+                        // FUNCTION PARAMS:
+                        // scriptEng.operands[0] = inputSlot
+                        //
+                        // FUNCTION NOTES:
+                        // - Sets scriptEng.checkResult
+
+                        scriptEng.checkResult = IsInputSlotAssigned(scriptEng.operands[0]);
+                        break;
+
+                    case FUNC_RESETINPUTSLOTASSIGNMENTS:
+                        // FUNCTION PARAMS:
+                        // None
+
+                        ResetInputSlotAssignments();
+                        break;
+                    }
                 }
             }
             else if (opcodeType == SCRIPTVAR_INTCONST) { // int constant
