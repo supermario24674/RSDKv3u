@@ -1,6 +1,18 @@
 #ifndef INPUT_H
 #define INPUT_H
 
+{
+
+#define PLAYER_COUNT      (2)
+#define INPUTDEVICE_COUNT (0x10)
+
+#define INPUT_DEADZONE (0.3)
+
+enum InputIDs {
+    INPUT_UNASSIGNED = -2,
+    INPUT_AUTOASSIGN = -1,
+    INPUT_NONE       = 0,
+};
 enum InputSlotIDs {
     CONT_ANY,
     CONT_P1,
