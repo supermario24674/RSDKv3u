@@ -2964,11 +2964,11 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptSub)
                         break;
 
                     case FUNC_SETSCREENCOUNT:
-                    // FUNCTION PARAMS:
-                    // scriptEng.operands[0] = screenCount
+                        // FUNCTION PARAMS:
+                        // scriptEng.operands[0] = screenCount
 
-                    RSDK::SetVideoSetting(VIDEOSETTING_SCREENCOUNT, scriptEng.operands[0]);
-                    break;
+                        SetVideoSetting(VIDEOSETTING_SCREENCOUNT, scriptEng.operands[0]);
+                        break;
 
                     case FUNC_SETSCREENVERTICES:
                         // FUNCTION PARAMS:
@@ -2978,7 +2978,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptSub)
                         // scriptEng.operands[3] = startVert3P_S2
                         // scriptEng.operands[4] = startVert3P_S3
 
-                        RSDK::SetScreenVertices(scriptEng.operands[0], scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3],
+                        SetScreenVertices(scriptEng.operands[0], scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3],
                                                 scriptEng.operands[4]);
                         break;
 
